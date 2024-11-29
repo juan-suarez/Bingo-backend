@@ -42,4 +42,18 @@ export class User {
       throw new Error('Error al crear el usuario');
     }
   }
+
+  static async getUserByEmail(email) {
+    try {
+      const res = await dbQuery(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+      )
+      
+      return res.rows[0];
+    } catch(error){
+      console.error('Error al obtener el usuario:', error);
+      throw new Error('Error al obtener el usuario');
+    }
+  }
 }
