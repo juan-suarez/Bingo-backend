@@ -1,4 +1,5 @@
 import express from 'express'
+import { createUser } from '../controller/userController.js';
 
 const routes = express.Router();
 
@@ -12,9 +13,6 @@ routes.post('/login',(req, res) => {
   res.send('you are loged in!');
 })
 
-routes.post('/register',(req, res) => {
-
-  res.send('you are registed!');
-})
+routes.post('/register', createUser)
 
 export default routes;

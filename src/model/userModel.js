@@ -20,3 +20,26 @@ export const createUsersTable = async () => {
     console.error('Error al crear la tabla:', error);
   }
 }
+
+export class User {
+
+  constructor(id, username, email, password) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+  }
+
+  static async createUser(username, email, password) {
+    try {
+      const res = await dbQuery(
+        'INSERT INTO users(username, email, password) VALUES($1, $2, $3) RETURNING id',
+        [username, email, password]
+      );
+      return res.rows[0].id;
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+      throw new Error('Error al crear el usuario');
+    }
+  }
+}
