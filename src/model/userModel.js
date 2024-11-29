@@ -1,4 +1,5 @@
 import { dbQuery } from "../db/db.js";
+import bcrypt from 'bcrypt';
 
 
 export const createUsersTable = async () => {
@@ -32,9 +33,10 @@ export class User {
 
   static async createUser(username, email, password) {
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
       const res = await dbQuery(
         'INSERT INTO users(username, email, password) VALUES($1, $2, $3) RETURNING id',
-        [username, email, password]
+        [username, email, hashedPassword]
       );
       return res.rows[0].id;
     } catch (error) {

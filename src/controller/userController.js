@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { User } from "../model/userModel.js";
 
 export const createUser = async (req, res) => {
@@ -23,8 +24,8 @@ export const loginUser = async (req, res) => {
     if(!user){
       return res.status(400).send({ meessage : 'El email no se encuentra registrado'})
     }
-
-    if(user.password != password){
+    const isPasswordValid = await bcrypt.compare(password,user.password)
+    if(!isPasswordValid){
       return res.status(400).send({ message: 'Contraseña incorrecta'})
     }
 
