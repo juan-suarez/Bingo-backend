@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { createUsersTable } from '../model/userModel.js';
 const { Pool } = pg;
 
 const pool = new Pool({
@@ -18,3 +19,13 @@ export const dbQuery = async(text, params) =>{
     throw new Error('Error en la base de datos');  
   }
 } 
+
+
+export const initializeDb = async () => {
+  try {
+    await createUsersTable();
+    console.log('Base de datos inicializada correctamente');
+  } catch (error) {
+    console.error('Error al inicializar la base de datos:', error);
+  }
+};
