@@ -3,7 +3,7 @@ import authRoutes from './src/routes/authRoutes.js'
 import { initializeDb } from './src/db/db.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import { authenticateToken } from './src/controller/verifyTóken.js';
+import { authenticateToken } from './src/controller/verifyToken.js';
 
 dotenv.config();
 const app = express();
