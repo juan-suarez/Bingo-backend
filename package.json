@@ -4,13 +4,14 @@
   "description": "bingo backend for foska tecnical test",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch ./index.js"
+    "dev": "node --watch ./index.js"
   },
   "author": "juan-suarez",
   "license": "ISC",
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "express": "^4.21.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1"
   }
 }
