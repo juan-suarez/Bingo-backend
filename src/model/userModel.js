@@ -5,7 +5,7 @@ export const createUsersTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
-      username VARCHAR(100) NOT NULL,
+      username VARCHAR(100) UNIQUE NOT NULL,
       email VARCHAR(100) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -38,7 +38,16 @@ export class User {
       );
       return res.rows[0].id;
     } catch (error) {
-      console.error('Error al crear el usuario:', error);
+      console.error('Error al crear el usuario:', error.constraint);
+      
+      if(error.code === "23505"){
+        if (error.constraint.includes('email')) {
+          throw new Error('El correo electrónico ya está registrado');
+        }
+        
+        throw new Error('El nombre de usuario ya está registrado');
+      }
+      
       throw new Error('Error al crear el usuario');
     }
   }

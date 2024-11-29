@@ -16,7 +16,7 @@ export const dbQuery = async(text, params) =>{
     return res;  
   } catch (error) {
     console.error('Error en la consulta SQL:', error.message);
-    throw new Error('Error en la base de datos');  
+    throw error;  
   }
 } 
 

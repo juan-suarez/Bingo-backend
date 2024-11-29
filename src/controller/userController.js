@@ -6,8 +6,12 @@ export const createUser = async (req, res) => {
     const userId = await User.createUser(username, email, password);
     res.status(201).json({ id: userId });
   } catch (error) {
-    console.error('Error al crear el usuario:', error);
-    res.status(400).json({ message: 'Error al crear el usuario' });
+    //console.error('Error al crear el usuario:', error);
+    if (error.message.includes('ya está registrado')) {
+      return res.status(400).json({ message: error.message });
+    }
+    
+    res.status(500).json({ message: 'Error al crear el usuario' });
   }
 };
 
