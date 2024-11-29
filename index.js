@@ -3,6 +3,7 @@ import authRoutes from './src/routes/authRoutes.js'
 import { initializeDb } from './src/db/db.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import { authenticateToken } from './src/controller/verifyTóken.js';
 
 dotenv.config();
 const app = express();
@@ -14,7 +15,7 @@ app.use(cookieParser());
 
 initializeDb();
 
-app.get('/',async (req,res) => {
+app.get('/',authenticateToken,async (req,res) => {
   res.send('app is healty')
 })
 
