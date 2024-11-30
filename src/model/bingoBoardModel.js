@@ -1,4 +1,4 @@
-class BingoBoard {
+export class BingoBoard {
   #numbers;  
   #markedNumbers;  
   static #usedNumbers = new Set(); 
