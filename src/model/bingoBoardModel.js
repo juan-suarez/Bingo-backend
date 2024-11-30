@@ -4,7 +4,7 @@ export class BingoBoard {
   static #usedNumbers = new Set(); 
 
   constructor() {
-    this.#numbers = this.generateBoard();
+    this.#numbers = this.#generateBoard();
     this.#markedNumbers = [];
   }
 

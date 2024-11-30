@@ -1,15 +1,17 @@
-import { BingoBoard } from "./bingoBoardModel";
+import { BingoBoard } from "./bingoBoardModel.js";
 
 export class Player {
   #username;
   #board;
+  #status;
 
   constructor(username) {
     this.#username = username;
     this.#board = new BingoBoard();
+    this.#status = "in lobby";
   }
 
-  getUsername() {
+  getUserName() {
     return this.#username;
   }
 
@@ -21,6 +23,14 @@ export class Player {
     return this.#board.getMarkedNumbers();
   }
 
+  getstatus() {
+    return this.#status;
+  }
+
+  setStatus(newStatus){
+    this.#status = newStatus;
+  }
+
   markNumber(num) {
     this.#board.markNumber(num);
   }
@@ -28,4 +38,5 @@ export class Player {
   hasWon() {
     return this.#board.isWinner(); 
   }
+
 }
