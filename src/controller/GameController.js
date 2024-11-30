@@ -36,7 +36,7 @@ export const startGame = (socket, io, bingoGame, userName) => {
     return;
   }
 
-  console.log(bingo.getPlayers()[0]);
+  console.log(bingoGame.getPlayers()[0]);
 };
 
 

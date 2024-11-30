@@ -26,7 +26,7 @@ export class BingoGame {
   }
 
   removePlayer(userName) {
-    const playerIndex = this.#players.findIndex(player => player.userName === userName);
+    const playerIndex = this.#players.findIndex(player => player.getUserName() === userName);
 
     if (playerIndex === -1) {
       throw new Error('Jugador no encontrado en el juego');

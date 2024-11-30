@@ -15,7 +15,7 @@ export const handleWebSocket = (server) => {
     const userName = socket.handshake.auth.username || socket.id;
 
     bingoGame.addPlayer(userName);
-    io.emit('connected-users', bingo.getPlayers().length);
+    io.emit('connected-users', bingoGame.getPlayers().length);
     io.emit('started-game',bingoGame.isActive());
 
     socket.on('bingo', async (message) => {
@@ -28,7 +28,7 @@ export const handleWebSocket = (server) => {
 
     socket.on('disconnect', () => {
       bingoGame.removePlayer(userName);
-      io.emit('connected-users', bingo.getPlayers().length);
+      io.emit('connected-users', bingoGame.getPlayers().length);
     });
   });
 };
