@@ -1,7 +1,9 @@
 import { Server } from 'socket.io';
+import { bingo, startGame } from './GameController.js';
+import { BingoGame } from '../model/bingoGameModel.js';
 
 export const handleWebSocket = (server) => {
-  let users = {}
+  const bingoGame = new BingoGame();
   const io = new Server(server, {
     connectionStateRecovery: {},
     cors: {
@@ -10,31 +12,23 @@ export const handleWebSocket = (server) => {
     },
   });
   io.on('connection', async (socket) => {
-    const userName = socket.handshake.auth.username || 'guest';
-    const userRole = socket.handshake.auth.role || 'user';
-    users[socket.id] = {userName, userRole}
+    const userName = socket.handshake.auth.username || socket.id;
 
-    io.emit('connected-users', users);
+    bingoGame.addPlayer(userName);
+    io.emit('connected-users', bingoGame.getPlayers().length);
+    io.emit('started-game',bingoGame.isActive());
 
-    socket.on('bingo', async (message) => {
-      //make bingo winner logic 
-      console.log("BINGO")
+    socket.on('bingo', async () => {
+      bingo(io, bingoGame, userName)
     });
 
-    socket.on('table-generator', async (message) => {
-      //make table generator logic
-      console.log("table generated")
-    });
-
-    socket.on('start-game', async (message) => {
-      //make init game logic
-      console.log('game started')
+    socket.on('start-game', async () => {
+      startGame(io, bingoGame);
     });
 
     socket.on('disconnect', () => {
-      delete users[socket.id];
-      io.emit('connected-users',users);
-      console.log('user disconnected');
+      bingoGame.removePlayer(userName);
+      io.emit('connected-users', bingoGame.getPlayers().length);
     });
   });
 };
