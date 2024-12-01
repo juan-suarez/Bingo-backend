@@ -27,6 +27,9 @@ export const handleWebSocket = (server) => {
     });
 
     socket.on('disconnect', () => {
+      if(bingoGame.getPlayers().length === 1){
+        bingoGame.finish()
+      }
       bingoGame.removePlayer(userName);
       io.emit('connected-users', bingoGame.getPlayers().length);
     });

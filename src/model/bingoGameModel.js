@@ -1,4 +1,23 @@
+import { dbQuery } from "../db/db.js";
 import { Player } from "./playerModel.js";
+
+export const createBingoGameTable = async () => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS bingo_game (
+      id SERIAL PRIMARY KEY,
+      winner VARCHAR,
+      status VARCHAR,
+      called_numbers INTEGER[],
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+  try {
+    await dbQuery(query);
+  } catch (error) {
+    console.error('Error al crear la tabla:', error);
+  }
+}
 
 export class BingoGame {
   #players;
@@ -6,6 +25,7 @@ export class BingoGame {
   #allNumbers;
   #winner;
   #status;
+  #id;
 
   constructor() {
     this.#players = [];
@@ -13,19 +33,45 @@ export class BingoGame {
     this.#allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
     this.#winner = null;
     this.#status = 'inactive';
+    this.#id = null;
+
+    this.createGameInDB();
   }
 
-  addPlayer(userName) {
+  async createGameInDB() {
+    const query = `
+      INSERT INTO bingo_game (status)
+      VALUES ('${this.#status}')
+      RETURNING id;
+    `;
+    try {
+      const result = await dbQuery(query);
+      this.#id = result.rows[0].id;
+    } catch (error) {
+      console.error('Error al crear el juego en la base de datos:', error);
+    }
+  }
+
+  async updateGameInDB() {
+    const query = `
+      UPDATE bingo_game
+      SET status = '${this.#status}', winner = '${this.#winner}', called_numbers = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${this.#id};
+    `;
+    await dbQuery(query, [Array.from(this.#calledNumbers)]);
+  }
+
+  async addPlayer(userName) {
     if (this.#players.find(player => player.userName === userName)) {
       throw new Error('El jugador ya está en el juego');
     }
 
-    const player = new Player(userName);
+    const player = new Player(userName, this.#id);
     this.#players.push(player);
     return player;
   }
 
-  removePlayer(userName) {
+  async removePlayer(userName) {
     const playerIndex = this.#players.findIndex(player => player.getUserName() === userName);
 
     if (playerIndex === -1) {
@@ -39,10 +85,11 @@ export class BingoGame {
     }
   }
 
-  start() {
+  async start() {
     this.#calledNumbers.clear();
     this.#winner = null;
     this.#status = 'active';
+    await this.updateGameInDB();
     this.#players.forEach(player => player.setStatus('In game'));
   }
 
@@ -54,15 +101,18 @@ export class BingoGame {
     return nextNumber;
   }
 
-  finish() {
+  async finish() {
     this.#status = 'finished';
+    console.log(this.#players)
     this.#players.forEach(player => {
+      
       if (player.getUserName() === this.#winner) {
         player.setStatus('Winner');
       } else {
         player.setStatus('Loser');
       }
     });
+    await this.updateGameInDB();
   }
 
   hasCorners(player) {
@@ -119,7 +169,7 @@ export class BingoGame {
     return false;
   }
 
-  isWinner(userName) {
+  async isWinner(userName) {
     const player = this.getPlayer(userName);
     if (!player) {
       throw new Error('Jugador no encontrado en el juego');
@@ -132,6 +182,7 @@ export class BingoGame {
       this.hasVertical(player)
     ) {
       this.setWinner(userName);
+      await this.updateGameInDB();
       return true;
     }
 

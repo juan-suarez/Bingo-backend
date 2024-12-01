@@ -16,7 +16,6 @@ export const createUsersTable = async () => {
 
   try {
     await dbQuery(query);
-    //console.log('Tabla de usuarios creada o ya existe');
   } catch (error) {
     console.error('Error al crear la tabla:', error);
   }
