@@ -6,10 +6,12 @@ export const createPlayersTable = async () => {
     CREATE TABLE IF NOT EXISTS players (
       id SERIAL PRIMARY KEY,
       username VARCHAR(100) UNIQUE NOT NULL,
+      game_id INTEGER,
       status VARCHAR,
       board INTEGER[],
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (game_id) REFERENCES bingo_game(id)
     );
   `;
 
@@ -24,11 +26,29 @@ export class Player {
   #username;
   #board;
   #status;
+  #gameId;
+  #playerId;
 
-  constructor(username) {
+  constructor(username, gameId) {
     this.#username = username;
+    this.#gameId = gameId;
     this.#board = new BingoBoard();
     this.#status = "in lobby";
+    this.savePlayerToDB();
+  }
+
+  async savePlayerToDB() {
+    const query = `
+      INSERT INTO players (username, game_id, status, board)
+      VALUES ('${this.#username}', ${this.#gameId}, '${this.#status}', $1)
+      RETURNING id;
+    `;
+    try {
+      const result = await dbQuery(query, [this.#board.getBoard()]);
+      this.#playerId = result.rows[0].id;
+    } catch (error) {
+      console.error('Error al guardar el jugador en la base de datos:', error);
+    }
   }
 
   getUserName() {
@@ -43,12 +63,26 @@ export class Player {
     return this.#board.getMarkedNumbers();
   }
 
-  getstatus() {
+  getStatus() {
     return this.#status;
   }
 
-  setStatus(newStatus){
+  setStatus(newStatus) {
     this.#status = newStatus;
+    this.updatePlayerStatusInDB();
+  }
+
+  async updatePlayerStatusInDB() {
+    const query = `
+      UPDATE players
+      SET status = '${this.#status}', updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${this.#playerId};
+    `;
+    try {
+      await dbQuery(query);
+    } catch (error) {
+      console.error('Error al actualizar el estado del jugador en la base de datos:', error);
+    }
   }
 
   markNumber(num) {
@@ -58,5 +92,4 @@ export class Player {
   hasWon() {
     return this.#board.isWinner(); 
   }
-
 }

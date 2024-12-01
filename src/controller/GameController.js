@@ -36,7 +36,6 @@ export const startGame = (io, bingoGame) => {
     return;
   }
 
-  console.log(bingoGame.getPlayers()[0]);
 };
 
 export const bingo = (io, bingoGame, userName) => {

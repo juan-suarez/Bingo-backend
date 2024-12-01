@@ -35,7 +35,12 @@ export class BingoBoard {
     return num;
   }
 
+  getBoard(){
+    return this.#numbers;
+  }
+
   static getUsedNumbers() {
     return BingoBoard.#usedNumbers;
   }
+
 }
