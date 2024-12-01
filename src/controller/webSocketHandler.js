@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { startGame } from './GameController.js';
+import { bingo, startGame } from './GameController.js';
 import { BingoGame } from '../model/bingoGameModel.js';
 
 export const handleWebSocket = (server) => {
@@ -18,12 +18,12 @@ export const handleWebSocket = (server) => {
     io.emit('connected-users', bingoGame.getPlayers().length);
     io.emit('started-game',bingoGame.isActive());
 
-    socket.on('bingo', async (message) => {
-      bingoGame.setWinner(userName);
+    socket.on('bingo', async () => {
+      bingo(io, bingoGame, userName)
     });
 
-    socket.on('start-game', async (message) => {
-      startGame(socket, io, bingoGame);
+    socket.on('start-game', async () => {
+      startGame(io, bingoGame);
     });
 
     socket.on('disconnect', () => {

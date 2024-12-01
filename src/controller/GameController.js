@@ -1,7 +1,7 @@
 
-export const startGame = (socket, io, bingoGame, userName) => {
+export const startGame = (io, bingoGame) => {
   let timeToStart = 10;
-  bingoGame.startGame();
+  bingoGame.start();
 
   const LobbyintervalId = setInterval(() => {
     io.emit('time-to-start', timeToStart);
@@ -39,4 +39,17 @@ export const startGame = (socket, io, bingoGame, userName) => {
   console.log(bingoGame.getPlayers()[0]);
 };
 
+export const bingo = (io, bingoGame, userName) => {
+  if(!bingoGame.isWinner(userName)){
+    bingoGame.getPlayer(userName).setStatus('Disqualified');
+    io.emit('user-disqualified', userName);
+    return ;
+  }
 
+  io.emit('game-finished', true);
+
+  bingoGame.setWinner(userName);
+  bingoGame.finish();
+
+  return;
+}

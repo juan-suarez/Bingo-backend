@@ -1,18 +1,18 @@
 import { Player } from "./playerModel.js";
 
 export class BingoGame {
-  #players
-  #calledNumbers
-  #allNumbers
-  #winner
-  #status
+  #players;
+  #calledNumbers;
+  #allNumbers;
+  #winner;
+  #status;
 
   constructor() {
     this.#players = [];
     this.#calledNumbers = new Set();  
     this.#allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
     this.#winner = null;
-    this.#status = 'inactive'
+    this.#status = 'inactive';
   }
 
   addPlayer(userName) {
@@ -39,10 +39,10 @@ export class BingoGame {
     }
   }
 
-  startGame() {
+  start() {
     this.#calledNumbers.clear();
     this.#winner = null;
-    this.#status= 'active'
+    this.#status = 'active';
     this.#players.forEach(player => player.setStatus('In game'));
   }
 
@@ -54,18 +54,91 @@ export class BingoGame {
     return nextNumber;
   }
 
-  finishGame(){
+  finish() {
     this.#status = 'finished';
     this.#players.forEach(player => {
-      if(player.getUserName() === this.#winner){
-        player.setStatus('Loser')
-      }else{
-        player.setStatus('Winner')
+      if (player.getUserName() === this.#winner) {
+        player.setStatus('Winner');
+      } else {
+        player.setStatus('Loser');
       }
     });
   }
 
-  isActive(){
+  hasCorners(player) {
+    const board = player.getBoard();
+    return (
+      this.#calledNumbers.has(board[0][0]) &&
+      this.#calledNumbers.has(board[0][4]) &&
+      this.#calledNumbers.has(board[4][0]) &&
+      this.#calledNumbers.has(board[4][4])
+    );
+  }
+
+  hasDiagonal(player) {
+    const board = player.getBoard();
+    return (
+      this.#calledNumbers.has(board[0][0]) &&
+      this.#calledNumbers.has(board[1][1]) &&
+      this.#calledNumbers.has(board[3][3]) &&
+      this.#calledNumbers.has(board[4][4]) ||
+      this.#calledNumbers.has(board[0][4]) &&
+      this.#calledNumbers.has(board[1][3]) &&
+      this.#calledNumbers.has(board[3][1]) &&
+      this.#calledNumbers.has(board[4][0])
+    );
+  }
+
+  hasVertical(player) {
+    const board = player.getBoard();
+    for (let i = 0; i < 5; i++) {
+      if (  
+        this.#calledNumbers.has(board[0][i]) &&
+        this.#calledNumbers.has(board[1][i]) &&
+        (this.#calledNumbers.has(board[i][2] || i === 2)) &&
+        this.#calledNumbers.has(board[3][i]) &&
+        this.#calledNumbers.has(board[4][i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasHorizontal(player) {
+    const board = player.getBoard();
+    for (let i = 0; i < 5; i++) {
+      if (
+        this.#calledNumbers.has(board[i][0]) &&
+        this.#calledNumbers.has(board[i][1]) &&
+        (this.#calledNumbers.has(board[i][2] || i === 2)) &&
+        this.#calledNumbers.has(board[i][3]) &&
+        this.#calledNumbers.has(board[i][4])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isWinner(userName) {
+    const player = this.getPlayer(userName);
+    if (!player) {
+      throw new Error('Jugador no encontrado en el juego');
+    }
+
+    if (
+      this.hasCorners(player) || 
+      this.hasDiagonal(player) || 
+      this.hasHorizontal(player) ||
+      this.hasVertical(player)
+    ) {
+      this.setWinner(userName);
+      return true;
+    }
+
+    return false;
+  }
+
+  isActive() {
     return this.#status === 'active';
   }
 
