@@ -1,11 +1,9 @@
 export class BingoBoard {
   #numbers;  
-  #markedNumbers;  
   static #usedNumbers = new Set(); 
 
   constructor() {
     this.#numbers = this.#generateBoard();
-    this.#markedNumbers = [];
   }
 
   
@@ -35,24 +33,6 @@ export class BingoBoard {
     } while (BingoBoard.#usedNumbers.has(num));  
     BingoBoard.#usedNumbers.add(num);
     return num;
-  }
-
-  markNumber(num) {
-    if (this.#numbers.includes(num) && !this.#markedNumbers.includes(num)) {
-      this.#markedNumbers.push(num);
-    }
-  }
-
-  getMarkedNumbers() {
-    return this.#markedNumbers;
-  }
-
-  isWinner() {
-    return this.#markedNumbers.length >= 5;
-  }
-
-  getBoard() {
-    return this.#numbers;
   }
 
   static getUsedNumbers() {

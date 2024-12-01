@@ -1,4 +1,25 @@
+import { dbQuery } from "../db/db.js";
 import { Player } from "./playerModel.js";
+
+export const createBingoGameTable = async () => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS bingo_game (
+      id SERIAL PRIMARY KEY,
+      winner VARCHAR,
+      status VARCHAR,
+      called_numbers INTEGER[],
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  try {
+    await dbQuery(query);
+  } catch (error) {
+    console.error('Error al crear la tabla:', error);
+  }
+}
+
 
 export class BingoGame {
   #players;
