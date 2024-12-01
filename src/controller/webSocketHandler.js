@@ -17,6 +17,7 @@ export const handleWebSocket = (server) => {
     bingoGame.addPlayer(userName);
     io.emit('connected-users', bingoGame.getPlayers().length);
     io.emit('started-game',bingoGame.isActive());
+    io.emit('generate-table',bingoGame.getPlayer(userName).getBoard())
 
     socket.on('bingo', async () => {
       bingo(io, bingoGame, userName)
