@@ -103,8 +103,8 @@ export class BingoGame {
 
   async finish() {
     this.#status = 'finished';
+    console.log(this.#players)
     this.#players.forEach(player => {
-
       if (player.getUserName() === this.#winner) {
         player.setStatus('Winner');
       } else {
@@ -185,7 +185,6 @@ export class BingoGame {
     ) {
       this.setWinner(userName);
       await this.updateGameInDB();
-      console.log()
       return true;
     }
 
