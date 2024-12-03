@@ -33,10 +33,8 @@ export const loginUser = async (req, res) => {
     const token = await jwt.sign(
       {
         id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.role
+        userName: user.username,
+        email: user.email
       },
       process.env.SECRET_KEY,
       {
@@ -55,7 +53,10 @@ export const loginUser = async (req, res) => {
       }
     )
     .status(200)
-    .send({ message: 'logeado correctamente!'})
+    .send({ 
+      message: 'logeado correctamente!',
+      userName: user.username,
+    })
   } catch (error) {
     console.error('Error al logear el usuario:', error)
     res.status(500).json({message: 'Error al ingresar'})
