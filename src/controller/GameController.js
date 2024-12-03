@@ -1,11 +1,10 @@
 
 export const startGame = (io, bingoGame) => {
-  let timeToStart = 10;
+  let timeToStart = 30;
   bingoGame.start();
 
   const LobbyintervalId = setInterval(() => {
     io.emit('time-to-start', timeToStart);
-
     if (timeToStart === 0) {
       clearInterval(LobbyintervalId);
       startGameLoop();
@@ -27,8 +26,7 @@ export const startGame = (io, bingoGame) => {
         clearInterval(gameIntervalId);
         return;
       }
-      if (bingoGame.getWinner()) {
-        io.emit('someone-win',bingoGame.getWinner())
+      if (bingoGame.getStatus() === 'finished' ) {
         clearInterval(gameIntervalId);
         return;
       }
@@ -38,17 +36,17 @@ export const startGame = (io, bingoGame) => {
 
 };
 
-export const bingo = (io, bingoGame, userName) => {
-  if(!bingoGame.isWinner(userName)){
+export const bingo = async (io, bingoGame, userName) => {
+  if(!(await bingoGame.isWinner(userName))){
     bingoGame.getPlayer(userName).setStatus('Disqualified');
-    io.emit('user-disqualified', userName);
+    io.emit('player-disqualified', userName);
     return ;
+  } else {
+    io.emit('game-finished', userName);
+    console.log(`${userName} is the winner`)
+    bingoGame.setWinner(userName);
+    bingoGame.finish();
   }
-
-  io.emit('game-finished', true);
-
-  bingoGame.setWinner(userName);
-  bingoGame.finish();
 
   return;
 }

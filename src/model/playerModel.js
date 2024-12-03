@@ -5,7 +5,7 @@ export const createPlayersTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS players (
       id SERIAL PRIMARY KEY,
-      username VARCHAR(100) UNIQUE NOT NULL,
+      username VARCHAR(100) NOT NULL,
       game_id INTEGER,
       status VARCHAR,
       board INTEGER[],

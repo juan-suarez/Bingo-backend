@@ -23,7 +23,7 @@ export class BingoBoard {
       }
     }
 
-    return [...columns.B.numbers, ...columns.I.numbers, ...columns.N.numbers, ...columns.G.numbers, ...columns.O.numbers];
+    return [columns.B.numbers, columns.I.numbers, columns.N.numbers, columns.G.numbers, columns.O.numbers];
   }
 
   #generateUniqueNumber(min, max) {

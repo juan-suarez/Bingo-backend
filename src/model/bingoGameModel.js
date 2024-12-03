@@ -29,7 +29,7 @@ export class BingoGame {
 
   constructor() {
     this.#players = [];
-    this.#calledNumbers = new Set();  
+    this.#calledNumbers = new Set();
     this.#allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
     this.#winner = null;
     this.#status = 'inactive';
@@ -75,7 +75,7 @@ export class BingoGame {
     const playerIndex = this.#players.findIndex(player => player.getUserName() === userName);
 
     if (playerIndex === -1) {
-      throw new Error('Jugador no encontrado en el juego');
+      return;
     }
 
     this.#players.splice(playerIndex, 1);
@@ -105,7 +105,6 @@ export class BingoGame {
     this.#status = 'finished';
     console.log(this.#players)
     this.#players.forEach(player => {
-      
       if (player.getUserName() === this.#winner) {
         player.setStatus('Winner');
       } else {
@@ -127,25 +126,27 @@ export class BingoGame {
 
   hasDiagonal(player) {
     const board = player.getBoard();
+  
     return (
-      this.#calledNumbers.has(board[0][0]) &&
-      this.#calledNumbers.has(board[1][1]) &&
-      this.#calledNumbers.has(board[3][3]) &&
-      this.#calledNumbers.has(board[4][4]) ||
-      this.#calledNumbers.has(board[0][4]) &&
-      this.#calledNumbers.has(board[1][3]) &&
-      this.#calledNumbers.has(board[3][1]) &&
-      this.#calledNumbers.has(board[4][0])
+      (this.#calledNumbers.has(board[0][0]) &&
+        this.#calledNumbers.has(board[1][1]) &&
+        this.#calledNumbers.has(board[3][3]) &&
+        this.#calledNumbers.has(board[4][4])) ||
+      
+      (this.#calledNumbers.has(board[0][4]) &&
+        this.#calledNumbers.has(board[1][3]) &&
+        this.#calledNumbers.has(board[3][1]) &&
+        this.#calledNumbers.has(board[4][0]))
     );
   }
 
   hasVertical(player) {
     const board = player.getBoard();
     for (let i = 0; i < 5; i++) {
-      if (  
+      if (
         this.#calledNumbers.has(board[0][i]) &&
         this.#calledNumbers.has(board[1][i]) &&
-        (this.#calledNumbers.has(board[i][2] || i === 2)) &&
+        (this.#calledNumbers.has(board[2][i] || i === 2)) &&
         this.#calledNumbers.has(board[3][i]) &&
         this.#calledNumbers.has(board[4][i])) {
         return true;
@@ -163,7 +164,7 @@ export class BingoGame {
         (this.#calledNumbers.has(board[i][2] || i === 2)) &&
         this.#calledNumbers.has(board[i][3]) &&
         this.#calledNumbers.has(board[i][4])) {
-        return true;
+          return true;
       }
     }
     return false;
@@ -172,12 +173,13 @@ export class BingoGame {
   async isWinner(userName) {
     const player = this.getPlayer(userName);
     if (!player) {
-      throw new Error('Jugador no encontrado en el juego');
+      return false;
     }
-
+    // console.log(player.getBoard());
+    // console.log(this.#calledNumbers);
     if (
-      this.hasCorners(player) || 
-      this.hasDiagonal(player) || 
+      this.hasCorners(player) ||
+      this.hasDiagonal(player) ||
       this.hasHorizontal(player) ||
       this.hasVertical(player)
     ) {
@@ -207,6 +209,10 @@ export class BingoGame {
 
   getWinner() {
     return this.#winner;
+  }
+
+  getStatus() {
+    return this.#status;
   }
 
   setWinner(userName) {

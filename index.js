@@ -6,14 +6,21 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { authenticateToken } from './src/controller/verifyToken.js';
 import { handleWebSocket } from './src/controller/webSocketHandler.js';
+import cors from 'cors'
 
 dotenv.config();
 const app = express();
 
 const port = process.env.PORT ?? 3000;
+const corsOptions = {
+  origin: 'http://localhost:3001',  
+  credentials: true,  
+  allowedHeaders: ['Content-Type', 'Authorization'],  
+};
 
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
+app.use('*',cors(corsOptions));
 
 initializeDb();
 
